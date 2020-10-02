@@ -1,8 +1,12 @@
 #include <SDL.h>
 #include <iostream>
+#include <cmath>
 #include <ctime>
 #include <ratio>
 #include <chrono>
+
+#define PI 3.14159265
+#define MAGIC_ANGLE (90.0 - 35.264)
 
 const int w_width = 800, w_height = 600, desired_fps = 60;
 SDL_Window * window;
@@ -18,12 +22,40 @@ void update() {
 	}	
 }
 
-void render() {
-	
+void transform(int in[3]) {
+	double rotateZ[3][3] = {{sin(45.0*PI/180.0), -sin(45.0*PI/180.0), 0.0},
+							{cos(45.0*PI/180.0), cos(45.0*PI/180.0), 0.0},
+							{0.0, 0.0, 0.0}};
+	//^^Rotates vectors 45 degrees around the Z-axis.
+	double rotateX[3][3] = {{1.0, 0.0, 0.0},
+							{0.0, cos(MAGIC_ANGLE * PI/180.0), -sin(MAGIC_ANGLE * PI/180.0)},
+							{0.0, sin(MAGIC_ANGLE * PI/180.0), cos(MAGIC_ANGLE * PI/180.0)}};
+	//^^Rotates vectors (90.0 - 35.264) degrees around the X-axis.
+	int operation1[3] = {0, 0, 0};
+	for(int row = 0; row < 3; row++) {
+		for(int column = 0; column < 3; column++) {
+			operation1[row] += rotateZ[row][column] * in[column];
+		}
+	} 
+	int operation2[3] = {0, 0, 0};
+	for(int row = 0; row < 3; row++) {
+		for(int column = 0; column < 3; column++) {
+			operation2[row] += rotateX[row][column] * operation1[column];
+		}
+	}
+	std::copy(operation2, operation2 + 3, in);
 }
 
-void transform(int in[3]) {
-	
+void render() {
+	int spacing = 50;
+	for(int ix = 0; ix < 10; ix++) {
+		for(int iy = 0; iy < 10; iy++) {
+			int point[3] = {ix * spacing, iy * spacing, 0};
+			transform(point);
+			SDL_SetRenderDrawColor(rr, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
+			SDL_RenderDrawPoint(rr, point[0], point[1]);
+		}
+	}
 }
 
 int main(int argc, char** argv) {
