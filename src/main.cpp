@@ -11,13 +11,25 @@
 const int w_width = 800, w_height = 600, desired_fps = 60;
 SDL_Window * window;
 SDL_Renderer * rr;
-bool closed = false;
+bool closed = false; // Set to true once the window is closed.
+
+int offsetX = 400; // The amount all graphics gets offset by on the X-axis.
+int offsetY = 100; // The amount all graphics gets offset by on the Y-axis.
+
+bool enableGrid;
+
+SDL_Texture* texture;
 
 void update() {
 	SDL_Event event;
 	if(SDL_PollEvent(&event)) {
 		if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
 			closed = true;
+		}
+		if(event.type == SDL_KEYDOWN) {
+			if(event.key.keysym.sym == SDLK_BACKQUOTE) {
+				enableGrid = !enableGrid;
+			}
 		}
 	}	
 }
@@ -46,14 +58,26 @@ void transform(int in[3]) {
 	std::copy(operation2, operation2 + 3, in);
 }
 
+void offset(int in[3]) {
+	in[0] += offsetX;
+	in[1] += offsetY;
+}
+
 void render() {
 	int spacing = 50;
 	for(int ix = 0; ix < 10; ix++) {
 		for(int iy = 0; iy < 10; iy++) {
 			int point[3] = {ix * spacing, iy * spacing, 0};
 			transform(point);
-			SDL_SetRenderDrawColor(rr, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
-			SDL_RenderDrawPoint(rr, point[0], point[1]);
+			offset(point);
+			SDL_Rect tileRect;
+			tileRect.x = point[0] - round(tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * spacing);
+			tileRect.y = point[1];
+			tileRect.w = round(tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * spacing * 2);
+			tileRect.h = round(sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * spacing * 2);
+			if(enableGrid) {
+				SDL_RenderCopy(rr, texture, NULL, &tileRect); // Draws grid.
+			}
 		}
 	}
 }
@@ -62,8 +86,16 @@ int main(int argc, char** argv) {
 	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0) {
 		std::cout << "COULD NOT INITIALIZE SDL!" << std::endl;
 	}
+	
 	window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_width, w_height, 0);
 	rr = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	
+	SDL_Surface* surface;
+	surface = SDL_LoadBMP("res/tile.bmp");
+	SDL_SetColorKey(surface, true, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
+	texture = SDL_CreateTextureFromSurface(rr, surface);
+	
+	enableGrid = false;
 	
 	using namespace std::chrono;
 	
