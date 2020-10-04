@@ -19,6 +19,8 @@ int offsetY = 100; // The amount all graphics gets offset by on the Y-axis.
 
 bool enableGrid;
 
+Map* map;
+
 SDL_Texture* texture;
 
 void update() {
@@ -81,6 +83,7 @@ void render() {
 			}
 		}
 	}
+	map -> render(rr);
 }
 
 int main(int argc, char** argv) {
@@ -101,7 +104,8 @@ int main(int argc, char** argv) {
 	enableGrid = false;
 	//^^The grid is off by default.
 	
-	Map* map = new Map("src/test.txt");
+	map = new Map("src/test.txt");
+	map -> loadTextures(rr, "res/test_tile_set.bmp");
 	
 	using namespace std::chrono;
 	
