@@ -4,6 +4,7 @@
 #include <ctime>
 #include <ratio>
 #include <chrono>
+#include "map.h"
 
 #define PI 3.14159265
 #define MAGIC_ANGLE (90.0 - 35.264)
@@ -89,13 +90,18 @@ int main(int argc, char** argv) {
 	
 	window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_width, w_height, 0);
 	rr = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	//^^Window and renderer created.
 	
 	SDL_Surface* surface;
 	surface = SDL_LoadBMP("res/tile.bmp");
 	SDL_SetColorKey(surface, true, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
 	texture = SDL_CreateTextureFromSurface(rr, surface);
+	//^^Loaded texture for the grid.
 	
 	enableGrid = false;
+	//^^The grid is off by default.
+	
+	Map* map = new Map("src/test.txt");
 	
 	using namespace std::chrono;
 	
