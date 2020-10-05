@@ -6,22 +6,12 @@
 #include <chrono>
 #include "map.h"
 
-#define PI 3.14159265
-#define MAGIC_ANGLE (90.0 - 35.264)
-
 const int w_width = 800, w_height = 600, desired_fps = 60;
 SDL_Window * window;
 SDL_Renderer * rr;
 bool closed = false; // Set to true once the window is closed.
 
-int offsetX = 400; // The amount all graphics gets offset by on the X-axis.
-int offsetY = 100; // The amount all graphics gets offset by on the Y-axis.
-
-bool enableGrid;
-
 Map* map;
-
-SDL_Texture* texture;
 
 void update() {
 	SDL_Event event;
@@ -31,59 +21,14 @@ void update() {
 		}
 		if(event.type == SDL_KEYDOWN) {
 			if(event.key.keysym.sym == SDLK_BACKQUOTE) {
-				enableGrid = !enableGrid;
+				map->enableGrid = !map->enableGrid;
 			}
 		}
 	}	
 }
 
-void transform(int in[3]) {
-	double rotateZ[3][3] = {{sin(45.0*PI/180.0), -sin(45.0*PI/180.0), 0.0},
-							{cos(45.0*PI/180.0), cos(45.0*PI/180.0), 0.0},
-							{0.0, 0.0, 0.0}};
-	//^^Rotates vectors 45 degrees around the Z-axis.
-	double rotateX[3][3] = {{1.0, 0.0, 0.0},
-							{0.0, cos(MAGIC_ANGLE * PI/180.0), -sin(MAGIC_ANGLE * PI/180.0)},
-							{0.0, sin(MAGIC_ANGLE * PI/180.0), cos(MAGIC_ANGLE * PI/180.0)}};
-	//^^Rotates vectors (90.0 - 35.264) degrees around the X-axis.
-	int operation1[3] = {0, 0, 0};
-	for(int row = 0; row < 3; row++) {
-		for(int column = 0; column < 3; column++) {
-			operation1[row] += rotateZ[row][column] * in[column];
-		}
-	} 
-	int operation2[3] = {0, 0, 0};
-	for(int row = 0; row < 3; row++) {
-		for(int column = 0; column < 3; column++) {
-			operation2[row] += rotateX[row][column] * operation1[column];
-		}
-	}
-	std::copy(operation2, operation2 + 3, in);
-}
-
-void offset(int in[3]) {
-	in[0] += offsetX;
-	in[1] += offsetY;
-}
-
 void render() {
-	int spacing = 50;
-	for(int ix = 0; ix < 10; ix++) {
-		for(int iy = 0; iy < 10; iy++) {
-			int point[3] = {ix * spacing, iy * spacing, 0};
-			transform(point);
-			offset(point);
-			SDL_Rect tileRect;
-			tileRect.x = point[0] - round(tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * spacing);
-			tileRect.y = point[1];
-			tileRect.w = round(tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * spacing * 2);
-			tileRect.h = round(sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * spacing * 2);
-			if(enableGrid) {
-				SDL_RenderCopy(rr, texture, NULL, &tileRect); // Draws grid.
-			}
-		}
-	}
-	map -> render(rr);
+	map->render(rr);
 }
 
 int main(int argc, char** argv) {
@@ -94,15 +39,6 @@ int main(int argc, char** argv) {
 	window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w_width, w_height, 0);
 	rr = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	//^^Window and renderer created.
-	
-	SDL_Surface* surface;
-	surface = SDL_LoadBMP("res/tile.bmp");
-	SDL_SetColorKey(surface, true, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
-	texture = SDL_CreateTextureFromSurface(rr, surface);
-	//^^Loaded texture for the grid.
-	
-	enableGrid = false;
-	//^^The grid is off by default.
 	
 	map = new Map("src/test.txt");
 	map -> loadTextures(rr, "res/test_tile_set.bmp");

@@ -8,13 +8,15 @@
 
 #define TILE_PIXEL_W 32
 #define TILE_PIXEL_H 32
-#define TILE_DRAWING_WIDTH 32
+#define TILE_DRAWING_WIDTH 64
 #define PI 3.14159265
 #define MAGIC_ANGLE (90.0 - 35.264)
 
 Map::Map(const char* fileName) {
+	enableGrid = false; // Grid is disabled by default.
 	offsetX = 400;
 	offsetY = 100;
+	
 	std::ifstream mapFile;
 	mapFile.open(fileName);
 	if(mapFile.is_open()) {
@@ -33,6 +35,14 @@ Map::Map(const char* fileName) {
 }
 
 void Map::loadTextures(SDL_Renderer* rr, const char* fileName) {
+
+	SDL_Surface* surface;
+	surface = SDL_LoadBMP("res/tile.bmp");
+	SDL_SetColorKey(surface, true, SDL_MapRGB(surface->format, 0x00, 0x00, 0x00));
+	gridTexture = SDL_CreateTextureFromSurface(rr, surface);
+	SDL_FreeSurface(surface);
+	//^^ Grid texture gets loaded.
+		
 	SDL_Surface* masterSurface = SDL_LoadBMP(fileName);
 	
 	int tilesWide = (masterSurface -> w) / TILE_PIXEL_W;
@@ -46,7 +56,7 @@ void Map::loadTextures(SDL_Renderer* rr, const char* fileName) {
 			tileRect.w = TILE_PIXEL_W;
 			tileRect.h = TILE_PIXEL_H;
 			SDL_Surface* tileSurface;
-			tileSurface = SDL_CreateRGBSurface(0, TILE_PIXEL_W, TILE_PIXEL_H, 32, 0, 0, 0, 0);
+			tileSurface = SDL_CreateRGBSurface(0, TILE_PIXEL_W, TILE_PIXEL_H, 24, 0, 0, 0, 0);
 			SDL_BlitSurface(masterSurface, &tileRect, tileSurface, NULL);
 			SDL_SetColorKey(tileSurface, true, SDL_MapRGB(tileSurface->format, 0x00, 0x00, 0x00));
 			textures.push_back(SDL_CreateTextureFromSurface(rr, tileSurface));
@@ -112,6 +122,9 @@ void Map::render(SDL_Renderer* rr) {
 			tileRect.w = round(tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * TILE_DRAWING_WIDTH * 2);
 			tileRect.h = round(sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * TILE_DRAWING_WIDTH * 4);
 			SDL_RenderCopy(rr, textures.at(getTileAt(ix, iy)), NULL, &tileRect);
+			if(enableGrid) {
+				SDL_RenderCopy(rr, gridTexture, NULL, &tileRect); // Draws grid.
+			}
 		}
 	}
 }
