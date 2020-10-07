@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 	rr = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	//^^Window and renderer created.
 	
-	map = new Map("src/test.txt");
+	map = new Map("res/test_map.txt");
 	map -> loadTextures(rr, "res/test_tile_set.bmp");
 	
 	using namespace std::chrono;

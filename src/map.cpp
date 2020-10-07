@@ -1,6 +1,7 @@
 #include "map.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -28,9 +29,11 @@ Map::Map(const char* fileName) {
 		std::string lineString;
 		for(int iy = 0; std::getline(mapFile, lineString); iy++) {
 			std::vector<int> line;
-			for(int ix = 0; ix < lineString.length(); ix++) {
-				line.push_back(((int)lineString[ix]) - 32);
-			}
+            std::stringstream sStream(lineString);
+            std::string tileString;
+			while(std::getline(sStream, tileString, ',')) {
+                line.push_back(std::stoi(tileString));
+            }
 			tileValues.push_back(line);
 		}
 	} else {
@@ -96,7 +99,9 @@ void Map::render(SDL_Renderer* rr) {
 			tileRect.y = round(point[1] - (cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * scale));
 			tileRect.w = round(cos(45.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 2.0 * scale);
 			tileRect.h = round(cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 4.0 * scale);
-			SDL_RenderCopy(rr, textures.at(getTileAt(ix, iy)), NULL, &tileRect);
+            if(getTileAt(ix, iy) >= 0) { // Prevents trying to load any negative indexes.
+			    SDL_RenderCopy(rr, textures.at(getTileAt(ix, iy)), NULL, &tileRect);
+            }
 			if(enableGrid) {
 				SDL_RenderCopy(rr, gridTexture, NULL, &tileRect); // Draws grid.
 			}
