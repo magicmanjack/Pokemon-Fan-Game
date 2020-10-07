@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #define PI 3.14159265
-#define MAGIC_ANGLE (90.0 - 35.264)
+#define MAGIC_ANGLE (90.0 - 30.0)
 
 double Transform::offsetX;
 double Transform::offsetY;

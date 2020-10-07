@@ -10,7 +10,7 @@
 #define PI 3.14159265
 #define TILE_PIXEL_W 32
 #define TILE_PIXEL_H 32
-#define TILE_DRAWING_WIDTH 64.0
+#define TILE_WIDTH_NO_TRANSFORM 22.627417
 
 Map::Map(const char* fileName) {
 	enableGrid = false; // Grid is disabled by default.
@@ -19,6 +19,8 @@ Map::Map(const char* fileName) {
     Transform::offsetY = 0;
     Transform::offsetZ = 0;
     //^^Starts at the top right corner of the map.
+
+    scale = 2; // The scale is 2x by default.
 
 	std::ifstream mapFile;
 	mapFile.open(fileName);
@@ -86,14 +88,14 @@ void Map::setTileAt(int x, int y, int i) {
 void Map::render(SDL_Renderer* rr) {
 	for(int ix = 0; ix < getMapTileWidth(); ix++) {
 		for(int iy = 0; iy < getMapTileHeight(); iy++) {
-			double point[3] = {ix * TILE_DRAWING_WIDTH, iy * TILE_DRAWING_WIDTH, 0};
+			double point[3] = {ix * TILE_WIDTH_NO_TRANSFORM * scale, iy * TILE_WIDTH_NO_TRANSFORM * scale, 0};
 			Transform::transform(point);
 			Transform::offset(point);
 			SDL_Rect tileRect;
-			tileRect.x = round(point[0] - (tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * TILE_DRAWING_WIDTH));
-			tileRect.y = round(point[1] - (sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * TILE_DRAWING_WIDTH * 2));
-			tileRect.w = round(tan(60.0 * PI/180.0) * sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * TILE_DRAWING_WIDTH * 2);
-			tileRect.h = round(sin(35.264 * PI/180.0) * sin(45.0 * PI/180.0) * TILE_DRAWING_WIDTH * 4);
+			tileRect.x = round(point[0] - (cos(45.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * scale));
+			tileRect.y = round(point[1] - (cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * scale));
+			tileRect.w = round(cos(45.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 2.0 * scale);
+			tileRect.h = round(cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 4.0 * scale);
 			SDL_RenderCopy(rr, textures.at(getTileAt(ix, iy)), NULL, &tileRect);
 			if(enableGrid) {
 				SDL_RenderCopy(rr, gridTexture, NULL, &tileRect); // Draws grid.

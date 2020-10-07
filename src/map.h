@@ -10,6 +10,7 @@ class Map {
 		std::vector<SDL_Texture*> textures; // A vector full of textures. Each one maps to a specific tile index.
 		SDL_Texture* gridTexture;
 		bool enableGrid;
+        int scale; // The scale that the map gets rendered at.
 		Map(const char* fileName); // Takes in the filename of the map to be loaded.
 		void loadTextures(SDL_Renderer* rr, const char* fileName);
 		int getTileAt(int x, int y);
