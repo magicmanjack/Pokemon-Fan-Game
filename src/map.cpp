@@ -13,15 +13,17 @@
 #define TILE_PIXEL_H 32
 #define TILE_WIDTH_NO_TRANSFORM 22.627417
 
-Map::Map(const char* fileName) {
+Player* Map::player = new Player(22.627417, 22.627417, 1);
+
+Map::Map(const char* fileName, int mapLayer) {
 	enableGrid = false; // Grid is disabled by default.
-	
     Transform::offsetX = 400;
     Transform::offsetY = 0;
     Transform::offsetZ = 0;
     //^^Starts at the top right corner of the map.
 
     scale = 2; // The scale is 2x by default.
+    layer = mapLayer;    
 
 	std::ifstream mapFile;
 	mapFile.open(fileName);
@@ -96,11 +98,15 @@ void Map::render(SDL_Renderer* rr) {
 			Transform::offset(point);
 			SDL_Rect tileRect;
 			tileRect.x = round(point[0] - (cos(45.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * scale));
-			tileRect.y = round(point[1] - (cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * scale));
+			tileRect.y = round(point[1] - (cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 2.0 * scale));
 			tileRect.w = round(cos(45.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 2.0 * scale);
 			tileRect.h = round(cos(45.0 * PI/180.0) * sin(30.0 * PI/180.0) * TILE_WIDTH_NO_TRANSFORM * 4.0 * scale);
             if(getTileAt(ix, iy) >= 0) { // Prevents trying to load any negative indexes.
 			    SDL_RenderCopy(rr, textures.at(getTileAt(ix, iy)), NULL, &tileRect);
+            }
+            if(player->layer == layer && floor(player->x / (TILE_WIDTH_NO_TRANSFORM * scale)) == ix && floor(player->y / (TILE_WIDTH_NO_TRANSFORM * scale)) == iy) {
+                SDL_RenderCopy(rr, gridTexture, NULL, &tileRect); // Draws grid.               
+                player->render(rr); // Draws player at whatever tile its on.
             }
 			if(enableGrid) {
 				SDL_RenderCopy(rr, gridTexture, NULL, &tileRect); // Draws grid.

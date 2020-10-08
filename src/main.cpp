@@ -6,16 +6,19 @@
 #include <chrono>
 #include "map.h"
 
+#include "transform.h"
+
 const int w_width = 800, w_height = 600, desired_fps = 60;
 SDL_Window * window;
 SDL_Renderer * rr;
 bool closed = false; // Set to true once the window is closed.
 
 Map* map;
+Map* secondLayer;
 
 void update() {
 	SDL_Event event;
-	if(SDL_PollEvent(&event)) {
+	while(SDL_PollEvent(&event)) {
 		if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
 			closed = true;
 		}
@@ -23,12 +26,25 @@ void update() {
 			if(event.key.keysym.sym == SDLK_BACKQUOTE) {
 				map->enableGrid = !map->enableGrid;
 			}
+            if(event.key.keysym.sym == SDLK_w) {
+                map->player->y -= 2;
+            }
+            if(event.key.keysym.sym == SDLK_s) {
+                map->player->y += 2;
+            }
+            if(event.key.keysym.sym == SDLK_a) {
+                map->player->x -= 2;
+            }
+            if(event.key.keysym.sym == SDLK_d) {
+                map->player->x += 2;
+            }
 		}
 	}	
 }
 
 void render() {
 	map->render(rr);
+    secondLayer->render(rr);
 }
 
 int main(int argc, char** argv) {
@@ -40,8 +56,10 @@ int main(int argc, char** argv) {
 	rr = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	//^^Window and renderer created.
 	
-	map = new Map("res/test_map.txt");
+	map = new Map("res/test_map.txt", 0);
 	map -> loadTextures(rr, "res/test_tile_set.bmp");
+    secondLayer = new Map("res/test_map_layer_2.txt", 1);
+    secondLayer -> loadTextures(rr, "res/test_tile_set.bmp");
 	
 	using namespace std::chrono;
 	
