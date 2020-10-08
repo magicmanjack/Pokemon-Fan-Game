@@ -10,7 +10,32 @@ Player::Player(double spawnX, double spawnY, int startLayer) {
     y = spawnY;
     w = 32;
     h = 32;
+    mUp = false;
+    mDown = false;
+    mLeft = false;
+    mRight = false;
+    walkSpeed = 2;
     layer = startLayer;
+}
+
+void Player::update() {
+    if(mUp) {
+        y -= walkSpeed;
+        x -= walkSpeed;
+    }
+    if(mDown) {
+        y += walkSpeed;
+        x += walkSpeed;
+    }
+    if(mLeft) {
+        y += walkSpeed;
+        x -= walkSpeed;
+    }
+
+    if(mRight) {
+        y -= walkSpeed;
+        x += walkSpeed;
+    }
 }
 
 void Player::render(SDL_Renderer* rr) {

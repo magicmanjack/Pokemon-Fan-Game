@@ -27,19 +27,43 @@ void update() {
 				map->enableGrid = !map->enableGrid;
 			}
             if(event.key.keysym.sym == SDLK_w) {
-                map->player->y -= 2;
+                map->player->mUp = true;
             }
             if(event.key.keysym.sym == SDLK_s) {
-                map->player->y += 2;
+                map->player->mDown = true;
             }
             if(event.key.keysym.sym == SDLK_a) {
-                map->player->x -= 2;
+                map->player->mLeft = true;
             }
             if(event.key.keysym.sym == SDLK_d) {
-                map->player->x += 2;
+                map->player->mRight = true;
             }
 		}
-	}	
+        if(event.type == SDL_KEYUP) {
+			if(event.key.keysym.sym == SDLK_BACKQUOTE) {
+				map->enableGrid = !map->enableGrid;
+			}
+            if(event.key.keysym.sym == SDLK_w) {
+                map->player->mUp = false;
+            }
+            if(event.key.keysym.sym == SDLK_s) {
+                map->player->mDown = false;
+            }
+            if(event.key.keysym.sym == SDLK_a) {
+                map->player->mLeft = false;
+            }
+            if(event.key.keysym.sym == SDLK_d) {
+                map->player->mRight = false;
+            }
+		}
+	}
+    Map::player->update();
+
+    double playerPos[] = {Map::player->x, Map::player->y, 0.0};
+    Transform::transform(playerPos);
+    Transform::offsetX = (w_width / 2) - playerPos[0];
+    Transform::offsetY = (w_height / 2) - playerPos[1];
+    //^^Calculating the offset of objects on the screen so that the player remains in the center.	
 }
 
 void render() {
