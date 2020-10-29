@@ -60,20 +60,28 @@ void update() {
 	}
 	if(Map::player->targetX == Map::player->x && Map::player->targetY == Map::player->y) {
 		if(left) {
-			Map::player->targetX -= TILE_WIDTH_NO_TRANSFORM * 2;
-			Map::player->targetY += TILE_WIDTH_NO_TRANSFORM * 2;
+			Map::player->targetX -= TILE_WIDTH_NO_TRANSFORM;
+			Map::player->targetY += TILE_WIDTH_NO_TRANSFORM;
 		}
 		if(right) {
-			Map::player->targetX += TILE_WIDTH_NO_TRANSFORM * 2;
-			Map::player->targetY -= TILE_WIDTH_NO_TRANSFORM * 2;
+			Map::player->targetX += TILE_WIDTH_NO_TRANSFORM;
+			Map::player->targetY -= TILE_WIDTH_NO_TRANSFORM;
 		}
 		if(up) {
-			Map::player->targetX -= TILE_WIDTH_NO_TRANSFORM * 2;
-			Map::player->targetY -= TILE_WIDTH_NO_TRANSFORM * 2;
+			if(!left) {
+				Map::player->targetX -= TILE_WIDTH_NO_TRANSFORM;
+			}
+			if(!right) {
+				Map::player->targetY -= TILE_WIDTH_NO_TRANSFORM;
+			}
 		}
 		if(down) {
-			Map::player->targetX += TILE_WIDTH_NO_TRANSFORM * 2;
-			Map::player->targetY += TILE_WIDTH_NO_TRANSFORM * 2;
+			if(!right) {
+				Map::player->targetX += TILE_WIDTH_NO_TRANSFORM;
+			}
+			if(!left) {
+				Map::player->targetY += TILE_WIDTH_NO_TRANSFORM;
+			}
 		}
 	}
 		

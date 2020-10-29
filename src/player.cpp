@@ -8,10 +8,11 @@
 Player::Player(double spawnX, double spawnY, int startLayer) {
     x = spawnX;
     y = spawnY;
+	scale = 1; // Default value.
 	targetX = spawnX;
 	targetY = spawnY;
-    w = 32;
-    h = 32;
+    w = 20;
+    h = 30;
     walkSpeed = 2;
     layer = startLayer;
 }
@@ -56,14 +57,14 @@ void Player::update() {
 
 void Player::render(SDL_Renderer* rr) {
     SDL_SetRenderDrawColor(rr, 0xFF, 0x00, 0x00, 0xFF);
-    double location[] = {x, y, 0};
+    double location[] = {x * scale, y * scale, 0};
     Transform::transform(location);
     Transform::offset(location);
     SDL_Rect rect;
-    rect.x = round(location[0] - (w/2));
-    rect.y = round(location[1] - h);
-    rect.w = round(w);
-    rect.h = round(h);
+    rect.x = round(location[0] - (w * scale/2));
+    rect.y = round(location[1] - (h * scale));
+    rect.w = round(w * scale);
+    rect.h = round(h * scale);
     SDL_RenderFillRect(rr, &rect);
     SDL_RenderDrawPoint(rr, location[0], location[1]);
 }

@@ -13,7 +13,7 @@
 #define TILE_PIXEL_H 32
 #define TILE_WIDTH_NO_TRANSFORM 22.627417
 
-Player* Map::player = new Player(22.627417, 22.627417, 1); // Static player is shared by all instances of map. This is for layering.
+Player* Map::player = new Player(TILE_WIDTH_NO_TRANSFORM / 2, TILE_WIDTH_NO_TRANSFORM / 2, 1); // Static player is shared by all instances of map. This is for layering.
 
 Map::Map(const char* fileName, int mapLayer) {
 	enableGrid = false; // Grid is disabled by default.
@@ -23,6 +23,7 @@ Map::Map(const char* fileName, int mapLayer) {
     //^^Starts at the top right corner of the map.
 
     scale = 2; // The scale is 2x by default.
+	player->scale = scale;
     layer = mapLayer;    
 
 	std::ifstream mapFile;
@@ -104,7 +105,7 @@ void Map::render(SDL_Renderer* rr) {
             if(getTileAt(ix, iy) >= 0) { // Prevents trying to load any negative indexes.
 			    SDL_RenderCopy(rr, textures.at(getTileAt(ix, iy)), NULL, &tileRect);
             }
-            if(player->layer == layer && floor(player->x / (TILE_WIDTH_NO_TRANSFORM * scale)) == ix && floor(player->y / (TILE_WIDTH_NO_TRANSFORM * scale)) == iy) {
+            if(player->layer == layer && floor(player->x / (TILE_WIDTH_NO_TRANSFORM)) == ix && floor(player->y / (TILE_WIDTH_NO_TRANSFORM)) == iy) {
                 SDL_RenderCopy(rr, gridTexture, NULL, &tileRect); // Draws grid.               
                 player->render(rr); // Draws player at whatever tile its on.
             }

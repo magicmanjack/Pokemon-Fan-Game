@@ -9,6 +9,7 @@ class Player {
         double y;
         double w;
         double h;
+		double scale;
 		double targetX;
 		double targetY;
         int walkSpeed;
