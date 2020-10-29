@@ -1,5 +1,5 @@
 #include "player.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
 
 #ifndef _MAP_H_INCLUDED_

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "transform.h"
 
 #define PI 3.14159265
@@ -13,7 +13,7 @@
 #define TILE_PIXEL_H 32
 #define TILE_WIDTH_NO_TRANSFORM 22.627417
 
-Player* Map::player = new Player(22.627417, 22.627417, 1);
+Player* Map::player = new Player(22.627417, 22.627417, 1); // Static player is shared by all instances of map. This is for layering.
 
 Map::Map(const char* fileName, int mapLayer) {
 	enableGrid = false; // Grid is disabled by default.

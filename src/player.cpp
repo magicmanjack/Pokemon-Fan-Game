@@ -8,34 +8,50 @@
 Player::Player(double spawnX, double spawnY, int startLayer) {
     x = spawnX;
     y = spawnY;
+	targetX = spawnX;
+	targetY = spawnY;
     w = 32;
     h = 32;
-    mUp = false;
-    mDown = false;
-    mLeft = false;
-    mRight = false;
     walkSpeed = 2;
     layer = startLayer;
 }
 
-void Player::update() {
-    if(mUp) {
-        y -= walkSpeed;
-        x -= walkSpeed;
-    }
-    if(mDown) {
-        y += walkSpeed;
-        x += walkSpeed;
-    }
-    if(mLeft) {
-        y += walkSpeed;
-        x -= walkSpeed;
-    }
+void Player::setWalkLocation(double targetX, double targetY) {
+	Player::targetX = targetX;
+	Player::targetY = targetY;
+}
 
-    if(mRight) {
-        y -= walkSpeed;
-        x += walkSpeed;
-    }
+void Player::update() {
+
+	if(targetX > x) {
+		if(x + walkSpeed > targetX) {
+			x += targetX - x;
+		} else {
+			x += walkSpeed;
+		}
+	}
+	if(targetX < x) {
+		if(x - walkSpeed < targetX) {
+			x -= x - targetX;
+		} else {
+			x -= walkSpeed;
+		}
+	}
+	if(targetY > y) {
+		if(y + walkSpeed > targetY) {
+			y += targetY - y;
+		} else {
+			y += walkSpeed;
+		}
+	}
+	if(targetY < y) {
+		if(y - walkSpeed < targetY) {
+			y -= y - targetY;
+		} else {
+			y -= walkSpeed;
+		}
+	}
+    
 }
 
 void Player::render(SDL_Renderer* rr) {

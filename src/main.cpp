@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <iostream>
 #include <cmath>
 #include <ctime>
@@ -8,10 +8,14 @@
 
 #include "transform.h"
 
+#define TILE_WIDTH_NO_TRANSFORM 22.627417
+
 const int w_width = 800, w_height = 600, desired_fps = 60;
 SDL_Window * window;
 SDL_Renderer * rr;
 bool closed = false; // Set to true once the window is closed.
+
+bool up, down, left, right; // Used to keep track of which keys are pressed. Helps with eight directional movement.
 
 Map* map;
 Map* secondLayer;
@@ -27,38 +31,54 @@ void update() {
 				map->enableGrid = !map->enableGrid;
 			}
             if(event.key.keysym.sym == SDLK_w) {
-                map->player->mUp = true;
+                up = true;
             }
             if(event.key.keysym.sym == SDLK_s) {
-                map->player->mDown = true;
+                down = true;
             }
             if(event.key.keysym.sym == SDLK_a) {
-                map->player->mLeft = true;
+                left = true;
             }
             if(event.key.keysym.sym == SDLK_d) {
-                map->player->mRight = true;
+                right = true;
             }
 		}
         if(event.type == SDL_KEYUP) {
-			if(event.key.keysym.sym == SDLK_BACKQUOTE) {
-				map->enableGrid = !map->enableGrid;
-			}
             if(event.key.keysym.sym == SDLK_w) {
-                map->player->mUp = false;
+                up = false;
             }
             if(event.key.keysym.sym == SDLK_s) {
-                map->player->mDown = false;
+                down = false;
             }
             if(event.key.keysym.sym == SDLK_a) {
-                map->player->mLeft = false;
+                left = false;
             }
             if(event.key.keysym.sym == SDLK_d) {
-                map->player->mRight = false;
+                right = false;
             }
 		}
 	}
+	if(Map::player->targetX == Map::player->x && Map::player->targetY == Map::player->y) {
+		if(left) {
+			Map::player->targetX -= TILE_WIDTH_NO_TRANSFORM * 2;
+			Map::player->targetY += TILE_WIDTH_NO_TRANSFORM * 2;
+		}
+		if(right) {
+			Map::player->targetX += TILE_WIDTH_NO_TRANSFORM * 2;
+			Map::player->targetY -= TILE_WIDTH_NO_TRANSFORM * 2;
+		}
+		if(up) {
+			Map::player->targetX -= TILE_WIDTH_NO_TRANSFORM * 2;
+			Map::player->targetY -= TILE_WIDTH_NO_TRANSFORM * 2;
+		}
+		if(down) {
+			Map::player->targetX += TILE_WIDTH_NO_TRANSFORM * 2;
+			Map::player->targetY += TILE_WIDTH_NO_TRANSFORM * 2;
+		}
+	}
+		
     Map::player->update();
-
+	
     double playerPos[] = {Map::player->x, Map::player->y, 0.0};
     Transform::transform(playerPos);
     Transform::offsetX = (w_width / 2) - playerPos[0];
@@ -84,6 +104,10 @@ int main(int argc, char** argv) {
 	map -> loadTextures(rr, "res/test_tile_set.bmp");
     secondLayer = new Map("res/test_map_layer_2.txt", 1);
     secondLayer -> loadTextures(rr, "res/test_tile_set.bmp");
+	up = false;
+	down = false;
+	left = false;
+	right = false;
 	
 	using namespace std::chrono;
 	
