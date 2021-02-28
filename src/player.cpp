@@ -8,6 +8,7 @@
 Player::Player(double spawnX, double spawnY, int startLayer) {
     x = spawnX;
     y = spawnY;
+	z = 0.0;
 	scale = 1; // Default value.
 	targetX = spawnX;
 	targetY = spawnY;
@@ -57,7 +58,7 @@ void Player::update() {
 
 void Player::render(SDL_Renderer* rr) {
     SDL_SetRenderDrawColor(rr, 0xFF, 0x00, 0x00, 0xFF);
-    double location[] = {x * scale, y * scale, 0};
+    double location[] = {x * scale, y * scale, z};
     Transform::transform(location);
     Transform::offset(location);
     SDL_Rect rect;

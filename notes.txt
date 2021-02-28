@@ -1,0 +1,1 @@
+Add animation target X/Y and normal target X/Y. When the player walks on flat tiles the animation target is set to the normal target.

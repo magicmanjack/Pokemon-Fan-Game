@@ -7,6 +7,7 @@ class Player {
     public:
         double x;
         double y;
+		double z;
         double w;
         double h;
 		double scale;
